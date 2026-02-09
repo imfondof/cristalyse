@@ -1,5 +1,25 @@
 # Changelog
 
+## 1.17.3 - 2026-02-09
+
+**Authored by [@jbbjarnason](https://github.com/jbbjarnason)** - Thank you for this fix! 👏
+
+**Reviewed and documented by maintainer [@rudi-q](https://github.com/rudi-q)**
+
+#### 🐛 Bug Fixes
+
+**Fixed OrdinalScale Inversion Overflow:**
+- Fixed a bug where `OrdinalScale.invert()` would overflow at the edges of the range.
+- Corrected the formula to use the proper step calculation, aligning it with the `scale()` method.
+
+#### 📊 Example Enhancements
+
+**Multi-Series Bar Chart Demo:**
+- Enhanced the example app with multi-series data to better demonstrate grouped bar chart functionality.
+- Updated bar chart mapping to include category-based color coding.
+
+---
+
 ## 1.17.2 - 2025-12-15
 
 #### 🐛 Bug Fixes

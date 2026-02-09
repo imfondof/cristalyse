@@ -12,6 +12,33 @@ seo:
 
 Stay informed about the latest features, improvements, and fixes in Cristalyse.
 
+<Update label="February 9, 2026" description="v1.17.3">
+  **Authored by [@jbbjarnason](https://github.com/jbbjarnason)** - Thank you for this contribution!
+
+  **Reviewed and documented by maintainer [@rudi-q](https://github.com/rudi-q)**
+
+  ### 🐛 OrdinalScale Inversion Fix
+  
+  **Fixed coordinate inversion at scale boundaries!**
+  
+  **What was fixed:**
+  - `OrdinalScale.invert()` now correctly maps screen coordinates back to domain categories even at the very edges of the range.
+  - Previously, a calculation mismatch could cause index overflows or incorrect category selection.
+  - The fix ensures mathematical consistency between forward scaling and inverse mapping.
+  
+  ### 📊 Enhanced Bar Chart Examples
+  
+  **Better multi-series demonstration!**
+  
+  - Added grouped bar series to the example app data.
+  - Demonstrated color mapping for categorical data in standard bar charts.
+  - Improved data visualization examples for developers.
+
+  **Quality Assurance:**
+  - Zero breaking changes.
+  - Fully backward compatible.
+</Update>
+
 <Update label="December 15, 2025" description="v1.17.2">
   ### 🐛 Tooltip Offset Fix
 
