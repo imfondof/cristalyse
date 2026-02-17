@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:cristalyse/cristalyse.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -40,44 +41,173 @@ class ChartScreen extends StatefulWidget {
 }
 
 class _ChartScreenState extends State<ChartScreen>
-    with TickerProviderStateMixin {
-  late AnimationController _fabAnimationController;
-  late Animation<double> _fabAnimation;
-
+    with SingleTickerProviderStateMixin {
+  bool _hasSetDefaults = false;
   int _currentThemeIndex = 0;
-  final _themes = [
-    ChartTheme.defaultTheme(),
-    ChartTheme.darkTheme(),
-    ChartTheme.solarizedLightTheme(),
-    ChartTheme.solarizedDarkTheme(),
+  final List<({String name, ChartTheme theme})> _themeData = [
+    (name: 'Light (default)', theme: ChartTheme.defaultTheme()),
+    (name: 'Dark', theme: ChartTheme.darkTheme()),
+    (
+      name: 'High Contrast',
+      theme: const ChartTheme(
+        backgroundColor: Colors.white,
+        plotBackgroundColor: Colors.white,
+        primaryColor: Colors.black,
+        borderColor: Colors.black,
+        gridColor: Color(0xFFBDBDBD),
+        axisColor: Colors.black,
+        gridWidth: 0.8,
+        axisWidth: 1.5,
+        pointSizeDefault: 5.0,
+        pointSizeMin: 3.0,
+        pointSizeMax: 14.0,
+        colorPalette: [
+          Color(0xFF0000CC),
+          Color(0xFFCC0000),
+          Color(0xFF007700),
+          Color(0xFFCC6600),
+          Color(0xFF6600CC),
+          Color(0xFF006666),
+        ],
+        padding: EdgeInsets.only(left: 80, right: 20, top: 20, bottom: 40),
+        axisTextStyle: TextStyle(
+          fontSize: 13,
+          color: Colors.black,
+          fontWeight: FontWeight.w600,
+        ),
+        axisLabelStyle: TextStyle(
+          fontSize: 13,
+          color: Colors.black,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    ),
+    (name: 'Solarized Light', theme: ChartTheme.solarizedLightTheme()),
+    (name: 'Solarized Dark', theme: ChartTheme.solarizedDarkTheme()),
   ];
-
-  final _themeNames = ['Default', 'Dark', 'Solarized Light', 'Solarized Dark'];
 
   int _currentPaletteIndex = 0;
-  final _colorPalettes = [
-    ChartTheme.defaultTheme().colorPalette,
-    const [
-      Color(0xfff44336),
-      Color(0xffe91e63),
-      Color(0xff9c27b0),
-      Color(0xff673ab7),
-    ],
-    const [
-      Color(0xff2196f3),
-      Color(0xff00bcd4),
-      Color(0xff009688),
-      Color(0xff4caf50),
-    ],
-    const [
-      Color(0xffffb74d),
-      Color(0xffff8a65),
-      Color(0xffdce775),
-      Color(0xffaed581),
-    ],
+  final List<({String name, List<Color> colors})> _paletteData = [
+    (name: 'Default', colors: ChartTheme.defaultTheme().colorPalette),
+    (
+      name: 'Warm',
+      colors: const [
+        Color(0xFFDC2626),
+        Color(0xFFEA580C),
+        Color(0xFFD97706),
+        Color(0xFFCA8A04),
+        Color(0xFF92400E),
+      ],
+    ),
+    (
+      name: 'Cool',
+      colors: const [
+        Color(0xff2196f3),
+        Color(0xff00bcd4),
+        Color(0xff009688),
+        Color(0xff4caf50),
+      ],
+    ),
+    (
+      name: 'Pastel',
+      colors: const [
+        Color(0xffffb74d),
+        Color(0xffff8a65),
+        Color(0xffdce775),
+        Color(0xffaed581),
+      ],
+    ),
+    (
+      name: 'Soft',
+      colors: const [
+        Color(0xFF93C5FD),
+        Color(0xFFF9A8D4),
+        Color(0xFFA5B4FC),
+        Color(0xFF86EFAC),
+        Color(0xFFFDE68A),
+      ],
+    ),
+    (
+      name: 'Ocean',
+      colors: const [
+        Color(0xFF0077B6),
+        Color(0xFF00B4D8),
+        Color(0xFF90E0EF),
+        Color(0xFF023E8A),
+        Color(0xFF48CAE4),
+      ],
+    ),
+    (
+      name: 'Earth',
+      colors: const [
+        Color(0xFF606C38),
+        Color(0xFFDDA15E),
+        Color(0xFFBC6C25),
+        Color(0xFF283618),
+        Color(0xFFFEFAE0),
+      ],
+    ),
+    (
+      name: 'Neon',
+      colors: const [
+        Color(0xFFFF006E),
+        Color(0xFF8338EC),
+        Color(0xFF3A86FF),
+        Color(0xFFFB5607),
+        Color(0xFFFFBE0B),
+      ],
+    ),
+    (
+      name: 'Monochrome',
+      colors: const [
+        Color(0xFF212529),
+        Color(0xFF495057),
+        Color(0xFF6C757D),
+        Color(0xFFADB5BD),
+        Color(0xFFDEE2E6),
+      ],
+    ),
+    (
+      name: 'Tropical',
+      colors: const [
+        Color(0xFFFF6B6B),
+        Color(0xFF4ECDC4),
+        Color(0xFFFFE66D),
+        Color(0xFF45B7D1),
+        Color(0xFFF7DC6F),
+      ],
+    ),
+    (
+      name: 'Jewel',
+      colors: const [
+        Color(0xFF1A5276),
+        Color(0xFF922B21),
+        Color(0xFF196F3D),
+        Color(0xFF6C3483),
+        Color(0xFFB9770E),
+      ],
+    ),
+    (
+      name: 'Forest',
+      colors: const [
+        Color(0xFF2D6A4F),
+        Color(0xFF40916C),
+        Color(0xFF52B788),
+        Color(0xFF74C69D),
+        Color(0xFF1B4332),
+      ],
+    ),
+    (
+      name: 'Slate',
+      colors: const [
+        Color(0xFF334155),
+        Color(0xFF475569),
+        Color(0xFF64748B),
+        Color(0xFF94A3B8),
+        Color(0xFFCBD5E1),
+      ],
+    ),
   ];
-
-  final _paletteNames = ['Default', 'Warm', 'Cool', 'Pastel'];
 
   double _sliderValue = 0.5;
   bool _showControls = false;
@@ -93,21 +223,26 @@ class _ChartScreenState extends State<ChartScreen>
   @override
   void initState() {
     super.initState();
-    _fabAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-    _fabAnimation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(
-        parent: _fabAnimationController,
-        curve: Curves.elasticOut,
-      ),
-    );
 
     _generateSampleData();
     _generateStackedBarData();
     _generateDualAxisData();
-    _fabAnimationController.forward();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_hasSetDefaults) {
+      _hasSetDefaults = true;
+      final isDark = Theme.of(context).brightness == Brightness.dark;
+      if (isDark) {
+        _currentThemeIndex = 1; // Dark theme
+        _currentPaletteIndex = 5; // Ocean palette
+      } else {
+        _currentThemeIndex = 0; // Default (light) theme
+        _currentPaletteIndex = 1; // Warm palette
+      }
+    }
   }
 
   void _generateSampleData() {
@@ -294,16 +429,10 @@ class _ChartScreenState extends State<ChartScreen>
     }
   }
 
-  @override
-  void dispose() {
-    _fabAnimationController.dispose();
-    super.dispose();
-  }
-
   ChartTheme get currentTheme {
-    final baseTheme = _themes[_currentThemeIndex];
+    final baseTheme = _themeData[_currentThemeIndex].theme;
     return baseTheme.copyWith(
-      colorPalette: _colorPalettes[_currentPaletteIndex],
+      colorPalette: _paletteData[_currentPaletteIndex].colors,
     );
   }
 
@@ -406,16 +535,16 @@ class _ChartScreenState extends State<ChartScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          SelectableText(
             title,
             style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.w500,
-              color: Colors.grey[600],
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 2),
-          Text(
+          SelectableText(
             value,
             style: TextStyle(
               fontSize: 16,
@@ -423,11 +552,14 @@ class _ChartScreenState extends State<ChartScreen>
               color: color,
             ),
           ),
-          Text(
+          SelectableText(
             change,
             style: TextStyle(
               fontSize: 9,
-              color: Colors.green[600],
+              color:
+                  Theme.of(context).brightness == Brightness.dark
+                      ? Colors.green[400]
+                      : Colors.green[600],
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -437,9 +569,9 @@ class _ChartScreenState extends State<ChartScreen>
   }
 
   Widget _buildControlPanel() {
-    return AnimatedContainer(
+    return AnimatedSize(
       duration: const Duration(milliseconds: 300),
-      height: _showControls ? null : 0,
+      curve: Curves.easeInOut,
       child:
           _showControls
               ? Container(
@@ -462,12 +594,12 @@ class _ChartScreenState extends State<ChartScreen>
                     Row(
                       children: [
                         Icon(
-                          Icons.tune,
+                          CupertinoIcons.slider_horizontal_3,
                           color: Theme.of(context).primaryColor,
                           size: 18,
                         ),
                         const SizedBox(width: 8),
-                        Text(
+                        SelectableText(
                           'Chart Controls',
                           style: TextStyle(
                             fontSize: 14,
@@ -479,7 +611,7 @@ class _ChartScreenState extends State<ChartScreen>
                         IconButton(
                           onPressed:
                               () => setState(() => _showControls = false),
-                          icon: const Icon(Icons.keyboard_arrow_up),
+                          icon: const Icon(CupertinoIcons.chevron_up),
                           iconSize: 18,
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
@@ -493,12 +625,15 @@ class _ChartScreenState extends State<ChartScreen>
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
+                              SelectableText(
                                 _getDisplayedValue(),
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.grey[700],
+                                  color:
+                                      Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
                                 ),
                               ),
                               SliderTheme(
@@ -523,44 +658,6 @@ class _ChartScreenState extends State<ChartScreen>
                               ),
                             ],
                           ),
-                        ),
-                        const SizedBox(width: 20),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${_themeNames[_currentThemeIndex]} • ${_paletteNames[_currentPaletteIndex]}',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.grey[700],
-                              ),
-                            ),
-                            const SizedBox(height: 6),
-                            Row(
-                              children:
-                                  _colorPalettes[_currentPaletteIndex]
-                                      .take(4)
-                                      .map(
-                                        (color) => Container(
-                                          width: 16,
-                                          height: 16,
-                                          margin: const EdgeInsets.only(
-                                            right: 4,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: color,
-                                            shape: BoxShape.circle,
-                                            border: Border.all(
-                                              color: Colors.white,
-                                              width: 1.5,
-                                            ),
-                                          ),
-                                        ),
-                                      )
-                                      .toList(),
-                            ),
-                          ],
                         ),
                       ],
                     ),
@@ -592,10 +689,10 @@ class _ChartScreenState extends State<ChartScreen>
       case 4:
         return AreaChartExample(
           theme: currentTheme,
-          colorPalette: _colorPalettes[_currentPaletteIndex],
+          colorPalette: _paletteData[_currentPaletteIndex].colors,
         );
       case 5:
-        return buildBubbleChartTab(currentTheme, _sliderValue);
+        return buildBubbleChartTab(context, currentTheme, _sliderValue);
       case 6:
         return buildBarChartTab(currentTheme, _barChartData, _sliderValue);
       case 7:
@@ -609,13 +706,18 @@ class _ChartScreenState extends State<ChartScreen>
       case 9:
         return buildStackedBarTab(currentTheme, _stackedBarData, _sliderValue);
       case 10:
-        return buildPieChartTab(currentTheme, _scatterPlotData, _sliderValue);
+        return buildPieChartTab(
+          context,
+          currentTheme,
+          _scatterPlotData,
+          _sliderValue,
+        );
       case 11:
         return buildDualAxisTab(currentTheme, _dualAxisData, _sliderValue);
       case 12:
         return buildHeatMapTab(
           currentTheme,
-          _colorPalettes[_currentPaletteIndex],
+          _paletteData[_currentPaletteIndex].colors,
         );
       case 13:
         return buildContributionHeatMapTab(currentTheme);
@@ -626,7 +728,7 @@ class _ChartScreenState extends State<ChartScreen>
       case 16:
         return ExportDemo(
           theme: currentTheme,
-          colorPalette: _colorPalettes[_currentPaletteIndex],
+          colorPalette: _paletteData[_currentPaletteIndex].colors,
         );
       case 17:
         return const DebugGradientExample();
@@ -634,6 +736,7 @@ class _ChartScreenState extends State<ChartScreen>
         return const AdvancedGradientExample();
       case 19:
         return buildLegendExampleTab(
+          context,
           currentTheme,
           _groupedBarData,
           _sliderValue,
@@ -946,7 +1049,7 @@ class _ChartScreenState extends State<ChartScreen>
                   route.description,
                   style: TextStyle(
                     fontSize: 12,
-                    color: isSelected ? Colors.grey[300] : Colors.grey[600],
+                    color: isSelected ? Colors.grey[300] : Colors.grey[500],
                   ),
                 ),
                 onTap: () {
@@ -993,41 +1096,105 @@ class _ChartScreenState extends State<ChartScreen>
           ],
         ),
         actions: [
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.list_alt),
-            tooltip: 'Jump to Chart',
-            onSelected: (route) {
-              context.go(route);
+          // Theme Dropdown
+          PopupMenuButton<int>(
+            icon: const Icon(CupertinoIcons.sun_max),
+            tooltip: 'Theme',
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            onSelected: (int index) {
+              setState(() {
+                _currentThemeIndex = index;
+              });
             },
             itemBuilder:
                 (context) =>
-                    AppRouter.routes
+                    _themeData
+                        .asMap()
+                        .entries
                         .map(
-                          (route) => PopupMenuItem(
-                            value: route.path,
-                            child: ListTile(
-                              leading: Icon(route.icon, size: 20),
-                              title: Text(route.title),
-                              subtitle:
-                                  route.isNew
-                                      ? const Text(
-                                        'New!',
-                                        style: TextStyle(
-                                          color: Colors.green,
-                                          fontSize: 10,
-                                        ),
-                                      )
-                                      : route.isExperimental
-                                      ? const Text(
-                                        'Experimental',
-                                        style: TextStyle(
-                                          color: Colors.orange,
-                                          fontSize: 10,
-                                        ),
-                                      )
-                                      : null,
-                              dense: true,
-                              contentPadding: EdgeInsets.zero,
+                          (entry) => PopupMenuItem<int>(
+                            value: entry.key,
+                            child: Row(
+                              children: [
+                                if (entry.key == _currentThemeIndex)
+                                  const Icon(
+                                    CupertinoIcons.checkmark_alt,
+                                    size: 16,
+                                  )
+                                else
+                                  const SizedBox(width: 16),
+                                const SizedBox(width: 8),
+                                Text(entry.value.name),
+                              ],
+                            ),
+                          ),
+                        )
+                        .toList(),
+          ),
+          // Palette Dropdown
+          PopupMenuButton<int>(
+            icon: const Icon(CupertinoIcons.paintbrush),
+            tooltip: 'Color Palette',
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            onSelected: (int index) {
+              setState(() {
+                _currentPaletteIndex = index;
+              });
+            },
+            itemBuilder:
+                (context) =>
+                    _paletteData
+                        .asMap()
+                        .entries
+                        .map(
+                          (entry) => PopupMenuItem<int>(
+                            value: entry.key,
+                            child: Row(
+                              children: [
+                                if (entry.key == _currentPaletteIndex)
+                                  const Icon(
+                                    CupertinoIcons.checkmark_alt,
+                                    size: 16,
+                                  )
+                                else
+                                  const SizedBox(width: 16),
+                                const SizedBox(width: 8),
+                                Text(entry.value.name),
+                                const SizedBox(width: 12),
+                                Row(
+                                  children:
+                                      _paletteData[entry.key].colors
+                                          .take(3)
+                                          .map(
+                                            (c) => Container(
+                                              width: 12,
+                                              height: 12,
+                                              margin: const EdgeInsets.only(
+                                                right: 3,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                color: c,
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                  color:
+                                                      Theme.of(
+                                                                context,
+                                                              ).brightness ==
+                                                              Brightness.dark
+                                                          ? Colors.grey[600]!
+                                                          : Colors.grey[300]!,
+                                                  width: 0.5,
+                                                ),
+                                              ),
+                                            ),
+                                          )
+                                          .toList(),
+                                ),
+                              ],
                             ),
                           ),
                         )
@@ -1035,7 +1202,11 @@ class _ChartScreenState extends State<ChartScreen>
           ),
           IconButton(
             onPressed: () => setState(() => _showControls = !_showControls),
-            icon: Icon(_showControls ? Icons.visibility_off : Icons.visibility),
+            icon: Icon(
+              _showControls
+                  ? CupertinoIcons.slider_horizontal_below_rectangle
+                  : CupertinoIcons.slider_horizontal_3,
+            ),
           ),
         ],
       ),
@@ -1056,7 +1227,7 @@ class _ChartScreenState extends State<ChartScreen>
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            SelectableText(
                               chartTitles[widget.chartIndex],
                               style: const TextStyle(
                                 fontSize: 24,
@@ -1064,11 +1235,14 @@ class _ChartScreenState extends State<ChartScreen>
                               ),
                             ),
                             const SizedBox(height: 4),
-                            Text(
+                            SelectableText(
                               chartDescriptions[widget.chartIndex],
                               style: TextStyle(
                                 fontSize: 14,
-                                color: Colors.grey[600],
+                                color:
+                                    Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
                                 height: 1.3,
                               ),
                             ),
@@ -1141,12 +1315,12 @@ class _ChartScreenState extends State<ChartScreen>
                         Row(
                           children: [
                             Icon(
-                              Icons.auto_awesome,
+                              CupertinoIcons.sparkles,
                               color: Theme.of(context).primaryColor,
                               size: 18,
                             ),
                             const SizedBox(width: 8),
-                            Text(
+                            SelectableText(
                               'Chart Features',
                               style: TextStyle(
                                 fontSize: 14,
@@ -1166,45 +1340,6 @@ class _ChartScreenState extends State<ChartScreen>
             ),
           ),
         ],
-      ),
-      floatingActionButton: AnimatedBuilder(
-        animation: _fabAnimation,
-        builder: (context, child) {
-          return Transform.scale(
-            scale: _fabAnimation.value,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                FloatingActionButton.extended(
-                  heroTag: "theme_fab",
-                  onPressed: () {
-                    setState(() {
-                      _currentThemeIndex =
-                          (_currentThemeIndex + 1) % _themes.length;
-                    });
-                  },
-                  icon: const Icon(Icons.palette),
-                  label: Text(_themeNames[_currentThemeIndex]),
-                  backgroundColor: Theme.of(context).primaryColor,
-                  foregroundColor: Colors.white,
-                ),
-                const SizedBox(width: 16),
-                FloatingActionButton(
-                  heroTag: "palette_fab",
-                  onPressed: () {
-                    setState(() {
-                      _currentPaletteIndex =
-                          (_currentPaletteIndex + 1) % _colorPalettes.length;
-                    });
-                  },
-                  backgroundColor: _colorPalettes[_currentPaletteIndex].first,
-                  foregroundColor: Colors.white,
-                  child: const Icon(Icons.color_lens),
-                ),
-              ],
-            ),
-          );
-        },
       ),
     );
   }
@@ -1229,11 +1364,12 @@ class _ChartScreenState extends State<ChartScreen>
                       ),
                       const SizedBox(width: 10),
                       Expanded(
-                        child: Text(
+                        child: SelectableText(
                           feature,
                           style: TextStyle(
                             fontSize: 13,
-                            color: Colors.grey[700],
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
                             height: 1.3,
                           ),
                         ),
@@ -1247,25 +1383,27 @@ class _ChartScreenState extends State<ChartScreen>
   }
 
   Widget _buildViewDocsButton(String docsUrl) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor.withAlpha(26),
-        borderRadius: BorderRadius.circular(8),
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    return OutlinedButton.icon(
+      onPressed: () => _launchUrl(docsUrl),
+      icon: const Icon(CupertinoIcons.book, size: 18),
+      label: const Text(
+        'View Docs',
+        style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
       ),
-      child: OutlinedButton.icon(
-        onPressed: () => _launchUrl(docsUrl),
-        icon: const Icon(Icons.menu_book, size: 18),
-        label: const Text(
-          'View Docs',
-          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+      style: OutlinedButton.styleFrom(
+        foregroundColor: isDark ? Colors.white70 : theme.primaryColor,
+        backgroundColor:
+            isDark
+                ? Colors.white.withAlpha(20)
+                : theme.primaryColor.withAlpha(26),
+        side: BorderSide(
+          color: isDark ? Colors.white24 : theme.primaryColor,
+          width: isDark ? 1.0 : 2.0,
         ),
-        style: OutlinedButton.styleFrom(
-          foregroundColor: Theme.of(context).primaryColor,
-          backgroundColor: Colors.white,
-          side: BorderSide(color: Theme.of(context).primaryColor, width: 2.0),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }
