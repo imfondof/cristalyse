@@ -11,6 +11,7 @@ import '../graphs/advanced_gradient_example.dart';
 import '../graphs/area_chart.dart';
 import '../graphs/bar_chart.dart';
 import '../graphs/bubble_chart.dart';
+import '../graphs/combo_bar_line_chart.dart';
 import '../graphs/debug_gradient.dart';
 import '../graphs/dual_axis_chart.dart';
 import '../graphs/export_demo.dart';
@@ -69,7 +70,7 @@ class _ChartScreenState extends State<ChartScreen>
           Color(0xFF6600CC),
           Color(0xFF006666),
         ],
-        padding: EdgeInsets.only(left: 80, right: 20, top: 20, bottom: 40),
+        padding: EdgeInsets.only(left: 8, right: 8, top: 16, bottom: 8),
         axisTextStyle: TextStyle(
           fontSize: 13,
           color: Colors.black,
@@ -452,6 +453,7 @@ class _ChartScreenState extends State<ChartScreen>
       case 6:
       case 7:
       case 8:
+      case 22:
         final value = _sliderValue.clamp(0.1, 1.0);
         return 'Bar Width: ${(value * 100).toStringAsFixed(0)}%';
       case 9: // Pie chart
@@ -489,6 +491,7 @@ class _ChartScreenState extends State<ChartScreen>
       'Legend Examples',
       'Time-Based Line Chart',
       'Zoom & Navigation Demo',
+      'Combo Chart (Bar + Line)',
     ];
   }
 
@@ -516,6 +519,7 @@ class _ChartScreenState extends State<ChartScreen>
       'Comprehensive legend showcase • 9 positioning options including new floating legends',
       'Line chart with time-based data on x-axis',
       'Pinch, scroll, and button-based zoom controls with live callbacks',
+      'Bar correctly colored by categorical variable with a single continuous overlaid line.',
     ];
   }
 
@@ -749,6 +753,8 @@ class _ChartScreenState extends State<ChartScreen>
         );
       case 21:
         return buildZoomExampleTab(currentTheme, _sliderValue);
+      case 22:
+        return buildComboBarLineTab(currentTheme, _sliderValue);
       default:
         return Container();
     }
@@ -933,6 +939,17 @@ class _ChartScreenState extends State<ChartScreen>
             Colors.purple,
           ),
         ];
+      case 22:
+        return [
+          _buildStatsCard(
+            'Color Bleed',
+            'None',
+            'No line slicing',
+            Colors.green,
+          ),
+          _buildStatsCard('Bars', 'Categorical', 'Dodge spacing', Colors.blue),
+          _buildStatsCard('Line', 'Solid', 'Continuous trend', Colors.purple),
+        ];
       default:
         return [];
     }
@@ -1083,6 +1100,8 @@ class _ChartScreenState extends State<ChartScreen>
       chartHeight = 450; // Slightly larger for heatmaps
     } else if (widget.chartIndex == 21 || title.contains('Zoom & Navigation')) {
       chartHeight = 640; // Extra room for zoom demo controls + chart
+    } else if (widget.chartIndex == 22) {
+      chartHeight = 420; // Room for Combo Chart SizedBox
     }
 
     return Scaffold(
