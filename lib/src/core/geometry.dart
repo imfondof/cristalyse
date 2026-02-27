@@ -29,6 +29,16 @@ abstract class Geometry {
 /// Enum for point shapes
 enum PointShape { circle, square, triangle }
 
+/// Value position enum for bar charts
+enum ValuePosition {
+  top,
+  insideTop,
+  center,
+  insideBottom,
+  bottom,
+  auto,
+}
+
 /// Point geometry for scatter plots
 class PointGeometry extends Geometry {
   final double? size;
@@ -83,6 +93,11 @@ class BarGeometry extends Geometry {
   final BorderRadius? borderRadius;
   final double borderWidth;
   final bool roundOutwardEdges;
+  final bool showValues;
+  final TextStyle? valueTextStyle;
+  final LabelCallback? valueFormatter;
+  final double valueOffset;
+  final ValuePosition valuePosition;
 
   BarGeometry({
     this.width = 0.8,
@@ -97,6 +112,11 @@ class BarGeometry extends Geometry {
     this.roundOutwardEdges = false,
     super.yAxis,
     super.interactive,
+    this.showValues = false,
+    this.valueTextStyle,
+    this.valueFormatter,
+    this.valueOffset = 4.0,
+    this.valuePosition = ValuePosition.top,
   });
 
   @override

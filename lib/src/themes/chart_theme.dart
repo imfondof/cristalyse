@@ -10,6 +10,8 @@ class ChartTheme {
   final Color axisColor;
   final double gridWidth;
   final double axisWidth;
+  final bool showHorizontalGridLines;
+  final bool showVerticalGridLines;
   final double pointSizeDefault;
   final double pointSizeMin;
   final double pointSizeMax;
@@ -30,6 +32,8 @@ class ChartTheme {
     required this.axisColor,
     required this.gridWidth,
     required this.axisWidth,
+    this.showHorizontalGridLines = true,
+    this.showVerticalGridLines = true,
     required this.pointSizeDefault,
     required this.pointSizeMin,
     required this.pointSizeMax,

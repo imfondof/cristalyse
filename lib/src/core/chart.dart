@@ -264,6 +264,11 @@ class CristalyseChart {
     double? borderWidth,
     bool? roundOutwardEdges,
     YAxis? yAxis,
+    bool? showValues,
+    TextStyle? valueTextStyle,
+    LabelCallback? valueFormatter,
+    double? valueOffset,
+    ValuePosition? valuePosition,
   }) {
     final barGeom = BarGeometry(
       width: width ?? 0.8,
@@ -277,6 +282,11 @@ class CristalyseChart {
       borderWidth: borderWidth ?? 0.0,
       roundOutwardEdges: roundOutwardEdges ?? false,
       yAxis: yAxis ?? YAxis.primary,
+      showValues: showValues ?? false,
+      valueTextStyle: valueTextStyle,
+      valueFormatter: valueFormatter,
+      valueOffset: valueOffset ?? 4.0,
+      valuePosition: valuePosition ?? ValuePosition.top,
     );
     _geometries.add(barGeom);
     return this;
@@ -1104,6 +1114,8 @@ extension ChartThemeExtension on ChartTheme {
     Color? axisColor,
     double? gridWidth,
     double? axisWidth,
+    bool? showHorizontalGridLines,
+    bool? showVerticalGridLines,
     double? pointSizeDefault,
     double? pointSizeMin,
     double? pointSizeMax,
@@ -1122,6 +1134,10 @@ extension ChartThemeExtension on ChartTheme {
       axisColor: axisColor ?? this.axisColor,
       gridWidth: gridWidth ?? this.gridWidth,
       axisWidth: axisWidth ?? this.axisWidth,
+      showHorizontalGridLines:
+          showHorizontalGridLines ?? this.showHorizontalGridLines,
+      showVerticalGridLines:
+          showVerticalGridLines ?? this.showVerticalGridLines,
       pointSizeDefault: pointSizeDefault ?? this.pointSizeDefault,
       pointSizeMin: pointSizeMin ?? this.pointSizeMin,
       pointSizeMax: pointSizeMax ?? this.pointSizeMax,

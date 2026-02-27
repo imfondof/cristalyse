@@ -650,49 +650,53 @@ class AnimatedChartPainter extends CustomPainter {
       ..strokeWidth = math.max(0.1, theme.gridWidth);
 
     // Vertical grid lines
-    final xTicks = xScale.getTicks();
-    for (final tick in xTicks) {
-      double x;
-      if (xScale is OrdinalScale) {
-        final ordinalScale = xScale;
-        x = plotArea.left + ordinalScale.bandCenter(tick);
-      } else {
-        if (tick is! num || !tick.isFinite) continue;
-        x = plotArea.left + xScale.scale(tick);
-      }
+    if (theme.showVerticalGridLines) {
+      final xTicks = xScale.getTicks();
+      for (final tick in xTicks) {
+        double x;
+        if (xScale is OrdinalScale) {
+          final ordinalScale = xScale;
+          x = plotArea.left + ordinalScale.bandCenter(tick);
+        } else {
+          if (tick is! num || !tick.isFinite) continue;
+          x = plotArea.left + xScale.scale(tick);
+        }
 
-      if (!x.isFinite || x < plotArea.left - 10 || x > plotArea.right + 10) {
-        continue;
-      }
+        if (!x.isFinite || x < plotArea.left - 10 || x > plotArea.right + 10) {
+          continue;
+        }
 
-      canvas.drawLine(
-        Offset(x, plotArea.top),
-        Offset(x, plotArea.bottom),
-        paint,
-      );
+        canvas.drawLine(
+          Offset(x, plotArea.top),
+          Offset(x, plotArea.bottom),
+          paint,
+        );
+      }
     }
 
     // Horizontal grid lines (based on primary Y-axis)
-    final yTicks = yScale.getTicks();
-    for (final tick in yTicks) {
-      double y;
-      if (yScale is OrdinalScale) {
-        final ordinalScale = yScale;
-        y = plotArea.top + ordinalScale.bandCenter(tick);
-      } else {
-        if (tick is! num || !tick.isFinite) continue;
-        y = plotArea.top + yScale.scale(tick);
-      }
+    if (theme.showHorizontalGridLines) {
+      final yTicks = yScale.getTicks();
+      for (final tick in yTicks) {
+        double y;
+        if (yScale is OrdinalScale) {
+          final ordinalScale = yScale;
+          y = plotArea.top + ordinalScale.bandCenter(tick);
+        } else {
+          if (tick is! num || !tick.isFinite) continue;
+          y = plotArea.top + yScale.scale(tick);
+        }
 
-      if (!y.isFinite || y < plotArea.top - 10 || y > plotArea.bottom + 10) {
-        continue;
-      }
+        if (!y.isFinite || y < plotArea.top - 10 || y > plotArea.bottom + 10) {
+          continue;
+        }
 
-      canvas.drawLine(
-        Offset(plotArea.left, y),
-        Offset(plotArea.right, y),
-        paint,
-      );
+        canvas.drawLine(
+          Offset(plotArea.left, y),
+          Offset(plotArea.right, y),
+          paint,
+        );
+      }
     }
   }
 
@@ -1251,6 +1255,25 @@ class AnimatedChartPainter extends CustomPainter {
         canvas.drawRect(barRect, borderPaint);
       }
     }
+
+    if (!geometry.showValues) {
+      return;
+    }
+
+    final textPainter = TextPainter(
+      text: TextSpan(
+        text: geometry.valueFormatter?.call(yValForBar),
+        style: geometry.valueTextStyle,
+      ),
+      textDirection: TextDirection.ltr,
+      textAlign: TextAlign.center,
+    )..layout();
+
+    final textPosition = Offset(
+      barRect.center.dx - textPainter.width / 2,
+      barRect.top - textPainter.height + geometry.valueOffset,
+    );
+    textPainter.paint(canvas, textPosition);
   }
 
   void _drawPointsAnimated(

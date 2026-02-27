@@ -205,25 +205,29 @@ class _ChartPainter extends CustomPainter {
       ..strokeWidth = theme.gridWidth;
 
     // Vertical grid lines
-    final xTicks = xScale.getTicks();
-    for (final tick in xTicks) {
-      final x = plotArea.left + xScale.scale(tick);
-      canvas.drawLine(
-        Offset(x, plotArea.top),
-        Offset(x, plotArea.bottom),
-        paint,
-      );
+    if (theme.showVerticalGridLines) {
+      final xTicks = xScale.getTicks();
+      for (final tick in xTicks) {
+        final x = plotArea.left + xScale.scale(tick);
+        canvas.drawLine(
+          Offset(x, plotArea.top),
+          Offset(x, plotArea.bottom),
+          paint,
+        );
+      }
     }
 
     // Horizontal grid lines
-    final yTicks = yScale.getTicks();
-    for (final tick in yTicks) {
-      final y = plotArea.top + yScale.scale(tick);
-      canvas.drawLine(
-        Offset(plotArea.left, y),
-        Offset(plotArea.right, y),
-        paint,
-      );
+    if (theme.showHorizontalGridLines) {
+      final yTicks = yScale.getTicks();
+      for (final tick in yTicks) {
+        final y = plotArea.top + yScale.scale(tick);
+        canvas.drawLine(
+          Offset(plotArea.left, y),
+          Offset(plotArea.right, y),
+          paint,
+        );
+      }
     }
   }
 
